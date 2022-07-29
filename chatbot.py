@@ -1,7 +1,3 @@
-# PA6, CS124, Stanford, Winter 2019
-# v.1.0.3
-# Original Python code by Ignacio Cases (@cases)
-######################################################################
 import util
 import porter_stemmer
 import numpy as np
@@ -9,67 +5,33 @@ import numpy as np
 
 # noinspection PyMethodMayBeStatic
 class Chatbot:
-    """Simple class to implement the chatbot for PA 6."""
-
+    
     def __init__(self, creative=False):
-        # The chatbot's default name is `moviebot`.
-        # TODO: Give your chatbot a new name.
         self.name = 'moviebot'
-
         self.creative = creative
 
-        # This matrix has the following shape: num_movies x num_users
-        # The values stored in each row i and column j is the rating for
-        # movie i by user j
+        """ 
+        This matrix has the following shape: num_movies x num_users.
+        The values stored in each row i and column j is the rating for movie i by user j.
+        """
         self.titles, ratings = util.load_ratings('data/ratings.txt')
         self.sentiment = util.load_sentiment_dictionary('data/sentiment.txt')
-
-        ########################################################################
-        # TODO: Binarize the movie ratings matrix.                             #
-        ########################################################################
 
         # Binarize the movie ratings before storing the binarized matrix.
         self.ratings = ratings
         self.ratings = self.binarize(self.ratings)
-        ########################################################################
-        #                             END OF YOUR CODE                         #
-        ########################################################################
-
-    ############################################################################
-    # 1. WARM UP REPL                                                          #
-    ############################################################################
 
     def greeting(self):
         """Return a message that the chatbot uses to greet the user."""
-        ########################################################################
-        # TODO: Write a short greeting message                                 #
-        ########################################################################
-
         greeting_message = "Hello! I would like to recommend you some movies! Please tell me about a movie that you have watched."
-
-        ########################################################################
-        #                             END OF YOUR CODE                         #
-        ########################################################################
         return greeting_message
 
     def goodbye(self):
         """
         Return a message that the chatbot uses to bid farewell to the user.
         """
-        ########################################################################
-        # TODO: Write a short farewell message                                 #
-        ########################################################################
-
         goodbye_message = "Have a nice day!"
-
-        ########################################################################
-        #                          END OF YOUR CODE                            #
-        ########################################################################
         return goodbye_message
-
-    ############################################################################
-    # 2. Modules 2 and 3: extraction and transformation                        #
-    ############################################################################
 
     recommending = False
     binary_clarifying = (False, 0, 0)
@@ -303,12 +265,6 @@ class Chatbot:
         :param line: a user-supplied line of text
         :returns: a string containing the chatbot's response to the user input
         """
-        ########################################################################
-        # TODO: Implement the extraction and transformation in this method,    #
-        # possibly calling other functions. Although your code is not graded   #
-        # directly based on how modular it is, we highly recommended writing   #
-        # code in a modular fashion to make it easier to improve and debug.    #
-        ########################################################################
         text = self.preprocess(line)
 
         if self.binary_clarifying[0]:
@@ -354,10 +310,6 @@ class Chatbot:
                                 response = self.echo_sentiment(index, sentiment)
                         else:
                             response = self.recommend_helper(index, sentiment)
-
-        ########################################################################
-        #                          END OF YOUR CODE                            #
-        ########################################################################
         return response
 
     @staticmethod
@@ -377,21 +329,11 @@ class Chatbot:
         :param text: a user-supplied line of text
         :returns: the same text, pre-processed
         """
-        ########################################################################
-        # TODO: Preprocess the text into a desired format.                     #
-        # NOTE: This method is completely OPTIONAL. If it is not helpful to    #
-        # your implementation to do any generic preprocessing, feel free to    #
-        # leave this method unmodified.                                        #
-        ########################################################################
         punctuations = ['.', ',', '?', '!']
         i = -1
         while text[i] in punctuations:
             text = text[:-1]
             i -= 1
-        ########################################################################
-        #                             END OF YOUR CODE                         #
-        ########################################################################
-
         return text
 
     def extract_titles(self, preprocessed_input):
@@ -921,10 +863,6 @@ class Chatbot:
                         return [candidates[len(candidates) - 1]]
         return []
 
-    ############################################################################
-    # 3. Movie Recommendation helper functions                                 #
-    ############################################################################
-
     @staticmethod
     def binarize(ratings, threshold=2.5):
         """Return a binarized version of the given matrix.
@@ -944,20 +882,9 @@ class Chatbot:
 
         :returns: a binarized version of the movie-rating matrix
         """
-        ########################################################################
-        # TODO: Binarize the supplied ratings matrix.                          #
-        #                                                                      #
-        # WARNING: Do not use self.ratings directly in this function.          #
-        ########################################################################
-
-        # The starter code returns a new matrix shaped like ratings but full of
-        # zeros.
         binarized_ratings = np.zeros_like(ratings)
         binarized_ratings[ratings > threshold] = 1
         binarized_ratings[(0 < ratings) & (ratings <= threshold)] = -1
-        ########################################################################
-        #                        END OF YOUR CODE                              #
-        ########################################################################
         return binarized_ratings
 
     def similarity(self, u, v):
@@ -970,17 +897,12 @@ class Chatbot:
 
         :returns: the cosine similarity between the two vectors
         """
-        ########################################################################
-        # TODO: Compute cosine similarity between the two vectors.             #
-        ########################################################################
         ids = np.where((u != 0) & (v != 0))[0]
 
         if len(ids) == 0:
             return 0
         similarity = u[ids] @ v[ids] / (np.linalg.norm(u) * np.linalg.norm(v))
-        ########################################################################
-        #                          END OF YOUR CODE                            #
-        ########################################################################
+
         return similarity
 
     def recommend(self, user_ratings, ratings_matrix, k=10, creative=False):
@@ -1006,19 +928,6 @@ class Chatbot:
         ratings_matrix, in descending order of recommendation.
         """
 
-        ########################################################################
-        # TODO: Implement a recommendation function that takes a vector        #
-        # user_ratings and matrix ratings_matrix and outputs a list of movies  #
-        # recommended by the chatbot.                                          #
-        #                                                                      #
-        # WARNING: Do not use the self.ratings matrix directly in this         #
-        # function.                                                            #
-        #                                                                      #
-        # For starter mode, you should use item-item collaborative filtering   #
-        # with cosine similarity, no mean-centering, and no normalization of   #
-        # scores.                                                              #
-        ########################################################################
-
         # Populate this list with k movie indices to recommend to the user.
         rated = np.where(user_ratings != 0)[0]
         unrated = np.where(user_ratings == 0)[0]
@@ -1035,14 +944,7 @@ class Chatbot:
             else:
                 preds.append((num / den, den, target))
         recommendations = [int(x) for x in np.array(sorted(preds, reverse=True)[:k])[:, 2]]
-        ########################################################################
-        #                        END OF YOUR CODE                              #
-        ########################################################################
         return recommendations
-
-    ############################################################################
-    # 4. Debug info                                                            #
-    ############################################################################
 
     def debug(self, line):
         """
@@ -1054,9 +956,6 @@ class Chatbot:
         debug_info = 'debug info'
         return debug_info
 
-    ############################################################################
-    # 5. Write a description for your chatbot here!                            #
-    ############################################################################
     def intro(self):
         """Return a string to use as your chatbot's description for the user.
 
